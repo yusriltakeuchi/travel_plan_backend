@@ -24,9 +24,7 @@ class AuthMiddleware {
         final token = headers['Authorization'].toString().split(' ').last;
         try {
           if (!JWTUtils.verifyAccessToken(accessToken: token)) {
-            if (!headers.containsKey('Authorization')) {
-              return APIResponse.unauthorized();
-            }
+            return APIResponse.unauthorized();
           }
 
           final userId = JWTUtils.getUserIdFromToken(accessToken: token);
