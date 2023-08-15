@@ -10,7 +10,7 @@ class JWTUtils {
     });
     return jwt.sign(
       SecretKey(_secretKey),
-      expiresIn: const Duration(minutes: 1),
+      expiresIn: const Duration(days: 30),
     );
   }
 
