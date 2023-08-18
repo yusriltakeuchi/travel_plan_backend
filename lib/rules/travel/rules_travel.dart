@@ -8,6 +8,6 @@ class RulesTravel {
     'latitude': 'required',
     'longitude': 'required',
     'plan_date': 'required|string',
-    'budget': 'required|int',
+    'budget': 'int|required',
   };
 }

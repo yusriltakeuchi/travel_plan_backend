@@ -1,4 +1,6 @@
-// ignore_for_file: inference_failure_on_function_return_type, lines_longer_than_80_chars, prefer_constructors_over_static_methods
+// ignore_for_file: inference_failure_on_function_return_type, lines_longer_than_80_chars, prefer_constructors_over_static_methods, use_setters_to_change_properties
+
+import 'package:intl/intl.dart';
 
 /// Validation class
 class Validations {
@@ -7,6 +9,30 @@ class Validations {
   Validations(this._requestData, this._rules);
   final Map<String, dynamic> _requestData;
   final Map<String, List<Function(dynamic)>> _rules;
+
+  static final Map<String, String> _localizedMessages = {
+    'required': 'Field :field is required.',
+    'string': ':field must be a string.',
+    'int': ':field must be an integer.',
+    'email': 'Invalid email format for :field.',
+    'min': ':field must be at least :value.',
+    'double': ':field must be a double.',
+    'boolean': ':field must be a boolean.',
+    'list': ':field must be a list.',
+    'max': ':field must be less than or equal to :value.',
+    'date': 'Invalid date format for :field. Expected format: yyyy-MM-dd.',
+    // ... add more localized messages as needed ...
+  };
+  
+  /// get Messages from localized
+  static String _getMessage(String ruleName, String fieldName, String? value) {
+    var message = _localizedMessages[ruleName] ?? 'Invalid rule: $ruleName for field: :field';
+    message = message.replaceAll(':field', fieldName);
+    if (value != null) {
+      message = message.replaceAll(':value', value);
+    }
+    return message;
+  }
 
   /// Validate request data
   List<String> validate() {
@@ -22,7 +48,7 @@ class Validations {
           }
         }
       } else {
-        errors.add("Field '$field' is required.");
+        errors.add(_getMessage('required', field, null));
       }
     });
 
@@ -59,17 +85,13 @@ class Validations {
   }
 
   static final Map<String, Function(String, dynamic, String?)> _validators = {
-    'required': (field, value, _) => value != null ? null : '$field is required.',
-    'string': (field, value, _) =>
-        value is String ? null : '$field must be a string.',
-    'int': (field, value, _) =>
-        value is int ? null : '$field must be an integer.',
-    'number': (field, value, _) =>
-        value is num ? null : '$field must be a number.',
+    'required': (field, value, _) => value != null ? null : _getMessage('required', field, null),
+    'string': (field, value, _) => value is String ? null : _getMessage('string', field, null),
+    'int': (field, value, _) => value is int ? null : _getMessage('int', field, null),
+    'number': (field, value, _) => value is num ? null : _getMessage('number', field, null),
     'email': (field, value, _) {
-      final emailRegex = RegExp(
-          r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',);
-      return emailRegex.hasMatch(value.toString()) ? null : 'Invalid email format for $field.';
+      final emailRegex = RegExp(r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$',);
+      return emailRegex.hasMatch(value.toString()) ? null : _getMessage('email', field, null);
     },
     'min': (field, value, min) {
       if (value is String && value.length >= int.parse(min!)) {
@@ -78,7 +100,30 @@ class Validations {
       if (value is int && value >= int.parse(min!)) {
         return null;
       }
-      return '$field must be at least $min.';
+      return _getMessage('min', field, min);
+    },
+    'double': (field, value, _) => value is double ? null : _getMessage('double', field, null),
+    'boolean': (field, value, _) => value is bool ? null : _getMessage('boolean', field, null),
+    'list': (field, value, _) => value is List ? null : _getMessage('list', field, null),
+    'max': (field, value, max) {
+      if (value is num && value <= double.parse(max!)) {
+        return null;
+      }
+      if (value is String && value.length <= int.parse(max!)) {
+        return null;
+      }
+      if (value is List && value.length <= int.parse(max!)) {
+        return null;
+      }
+      return _getMessage('max', field, max);
+    },
+    'date': (field, value, _) {
+      final dateFormat = DateFormat('yyyy-MM-dd');
+      final dynamic parseValue = dateFormat.parse(value.toString());
+      if (value is String && parseValue != null) {
+        return null;
+      }
+      return _getMessage('date', field, null);
     },
   };
 }
