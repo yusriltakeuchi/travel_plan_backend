@@ -5,7 +5,9 @@ import 'package:dart_frog/dart_frog.dart';
 import 'package:travel_plan/models/auth/login_model.dart';
 import 'package:travel_plan/models/response/api_response.dart';
 import 'package:travel_plan/repository/user/user_repository.dart';
+import 'package:travel_plan/rules/auth/rules_auth.dart';
 import 'package:travel_plan/utils/password/password_hash_utils.dart';
+import 'package:travel_plan/validation/validation.dart';
 import 'package:uuid/uuid.dart';
 
 /// Auth controller
@@ -22,6 +24,20 @@ class AuthController {
   Future<Response> login(RequestContext context) async {
     final userRepository = context.read<UserRepository>();
     final data = await context.request.json() as Map<String, dynamic>;
+
+    /// Validation
+    final validation = Validations.setRules(data, RulesAuth.login);
+    final validateErrors = validation.validate();
+    if (validateErrors.isNotEmpty) {
+      return Response.json(
+        statusCode: 400,
+        body: APIResponse<List<String>>(
+          success: false,
+          message: 'Validation error',
+          data: validateErrors,
+        ),
+      );
+    }
 
     /// Login user
     final result = await userRepository.login(data['email'] as String, data['password'] as String);
@@ -48,6 +64,20 @@ class AuthController {
   Future<Response> register(RequestContext context) async {
     final userRepository = context.read<UserRepository>();
     final data = await context.request.json() as Map<String, dynamic>;
+
+    final validation = Validations.setRules(data, RulesAuth.register);
+    final validateErrors = validation.validate();
+    if (validateErrors.isNotEmpty) {
+      return Response.json(
+        statusCode: 400,
+        body: APIResponse<List<String>>(
+          success: false,
+          message: 'Validation error',
+          data: validateErrors,
+        ),
+      );
+    }
+
     /// Check if email already exists
     final user = await userRepository.getUserByEmail(data['email'] as String);
     if (user == null) {

@@ -4,6 +4,8 @@ import 'package:travel_plan/models/response/api_response.dart';
 import 'package:travel_plan/models/travel_plan/travel_plan_model.dart';
 import 'package:travel_plan/models/user/user_model.dart';
 import 'package:travel_plan/repository/travel/travel_repository.dart';
+import 'package:travel_plan/rules/travel/rules_travel.dart';
+import 'package:travel_plan/validation/validation.dart';
 import 'package:uuid/uuid.dart';
 
 /// Travel controller
@@ -55,6 +57,19 @@ class TravelController {
   Future<Response> create(RequestContext context) async {
     final travelRepository = context.read<TravelRepository>();
     final data = await context.request.json() as Map<String, dynamic>;
+
+    final validation = Validations.setRules(data, RulesTravel.create);
+    final validateErrors = validation.validate();
+    if (validateErrors.isNotEmpty) {
+      return Response.json(
+        statusCode: 400,
+        body: APIResponse<List<String>>(
+          success: false,
+          message: 'Validation error',
+          data: validateErrors,
+        ),
+      );
+    }
 
     /// Get user from auth
     final user = context.read<UserModel?>();
