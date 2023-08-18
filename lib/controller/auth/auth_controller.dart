@@ -26,8 +26,9 @@ class AuthController {
     final data = await context.request.json() as Map<String, dynamic>;
 
     /// Validation
-    final validation = Validations.setRules(data, RulesAuth.login);
-    final validateErrors = validation.validate();
+    final validateErrors = Validations
+      .setRules(data, RulesAuth.login)
+      .validate();
     if (validateErrors.isNotEmpty) {
       return Response.json(
         statusCode: 400,
@@ -65,8 +66,9 @@ class AuthController {
     final userRepository = context.read<UserRepository>();
     final data = await context.request.json() as Map<String, dynamic>;
 
-    final validation = Validations.setRules(data, RulesAuth.register);
-    final validateErrors = validation.validate();
+    final validateErrors = Validations
+      .setRules(data, RulesAuth.register)
+      .validate();
     if (validateErrors.isNotEmpty) {
       return Response.json(
         statusCode: 400,

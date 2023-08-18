@@ -1,4 +1,6 @@
 
+// ignore_for_file: lines_longer_than_80_chars
+
 import 'package:dart_frog/dart_frog.dart';
 import 'package:travel_plan/models/response/api_response.dart';
 import 'package:travel_plan/models/travel_plan/travel_plan_model.dart';
@@ -58,8 +60,9 @@ class TravelController {
     final travelRepository = context.read<TravelRepository>();
     final data = await context.request.json() as Map<String, dynamic>;
 
-    final validation = Validations.setRules(data, RulesTravel.create);
-    final validateErrors = validation.validate();
+    final validateErrors = Validations
+      .setRules(data, RulesTravel.create)
+      .validate();
     if (validateErrors.isNotEmpty) {
       return Response.json(
         statusCode: 400,
