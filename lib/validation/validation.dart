@@ -119,11 +119,15 @@ class Validations {
     },
     'date': (field, value, _) {
       final dateFormat = DateFormat('yyyy-MM-dd');
-      final dynamic parseValue = dateFormat.parse(value.toString());
-      if (value is String && parseValue != null) {
-        return null;
+      try {
+        final dynamic parseValue = dateFormat.format(DateTime.parse(value.toString()));
+        if (value is String && parseValue != null) {
+          return null;
+        }
+        return _getMessage('date', field, null);
+      } catch(e) {
+        return _getMessage('date', field, null);
       }
-      return _getMessage('date', field, null);
     },
   };
 }
