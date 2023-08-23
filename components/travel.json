@@ -1,0 +1,32 @@
+{
+    "type": "object",
+    "required": [
+      "title",
+      "description",
+      "latitude",
+      "longitude",
+      "plan_date",
+      "budget"
+    ],
+    "properties": {
+      "title": {
+        "type": "string"
+      },
+      "description": {
+        "type": "string"
+      },
+      "latitude": {
+        "type": "string"
+      },
+      "longitude": {
+        "type": "string"
+      },
+      "plan_date": {
+        "type": "string"
+      },
+      "budget": {
+        "type": "integer",
+        "format": "int64"
+      }
+    }
+  }
