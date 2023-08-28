@@ -7,5 +7,7 @@ import 'package:travel_plan/middleware/auth_middleware.dart';
 Handler middleware(Handler handler) {
   return handler
     .use(requestLogger())
-    .use(AuthMiddleware.token());
+    .use(AuthMiddleware.token(
+      methods: [HttpMethod.post],
+    ),);
 }

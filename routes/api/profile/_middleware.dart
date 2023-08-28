@@ -7,5 +7,5 @@ import 'package:travel_plan/middleware/auth_middleware.dart';
 Handler middleware(Handler handler) {
   return handler
     .use(requestLogger())
-    .use(AuthMiddleware.token(getMethodNoAuth: false));
+    .use(AuthMiddleware.token(methods: [HttpMethod.get]));
 }

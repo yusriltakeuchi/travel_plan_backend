@@ -7,13 +7,12 @@ import 'package:travel_plan/utils/jwt/jwt_utils.dart';
 
 /// Auth middleware
 class AuthMiddleware {
-
-  /// Middleware token
-  static Middleware token({bool getMethodNoAuth = true}) {
+  
+  /// Middleware tokenzzzzxcaskodas
+  static Middleware token({required List<HttpMethod>? methods}) {
     return (handler) {
       return (context) async {
-        /// Disable middleware auth for get
-        if (getMethodNoAuth && context.request.method == HttpMethod.get) {
+        if (methods != null && !methods.contains(context.request.method)) {
           return handler(context);
         }
 
